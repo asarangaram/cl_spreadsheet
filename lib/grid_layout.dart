@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:cl_spreadsheet/store/checkbox_grid_id.dart'; // Import CheckboxGridId
+import 'package:cl_spreadsheet/models/store/checkbox_grid_id.dart'; // Import CheckboxGridId
 
 // --------------------------------------------------------------------------
 // 0. Abstract Cell Content Definition

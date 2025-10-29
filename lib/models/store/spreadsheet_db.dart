@@ -1,8 +1,8 @@
 import 'package:sqlite_async/sqlite_async.dart';
 import 'dart:developer'; // For logging errors
 
-import 'package:cl_spreadsheet/store/cell_data.dart';
-import 'package:cl_spreadsheet/store/checkbox_grid_id.dart'; // Import CheckboxGridId
+import 'package:cl_spreadsheet/models/store/cell_data.dart';
+import 'package:cl_spreadsheet/models/store/checkbox_grid_id.dart'; // Import CheckboxGridId
 
 import 'migration.dart';
 
@@ -40,7 +40,9 @@ class SpreadsheetDB {
     try {
       return CellData.fromJson(result['cell_data'] as String);
     } catch (e, st) {
-      log('Error deserializing CellData for R:${id.row}, C:${id.column}: $e\n$st');
+      log(
+        'Error deserializing CellData for R:${id.row}, C:${id.column}: $e\n$st',
+      );
       return null; // Return null for corrupted data
     }
   }

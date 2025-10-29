@@ -1,7 +1,7 @@
 import 'package:cl_spreadsheet/grid_layout.dart';
 import 'package:flutter/material.dart';
 
-import 'store/checkbox_grid_id.dart';
+import 'models/store/checkbox_grid_id.dart';
 
 class GridExampleScreen extends StatelessWidget {
   const GridExampleScreen({super.key});

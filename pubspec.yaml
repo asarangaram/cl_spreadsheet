@@ -40,6 +40,7 @@ dependencies:
   minimal_mvn: ^2.0.2
   meta: ^1.16.0
   stack_trace: ^1.12.1
+  shadcn_ui: ^0.39.2
 
 dev_dependencies:
   flutter_test:

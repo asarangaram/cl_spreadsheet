@@ -5,9 +5,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
 
-import 'package:cl_spreadsheet/store/cell_data.dart' as _i6;
-import 'package:cl_spreadsheet/store/checkbox_grid_id.dart' as _i5;
-import 'package:cl_spreadsheet/store/spreadsheet_db.dart' as _i3;
+import 'package:cl_spreadsheet/models/store/cell_data.dart' as _i6;
+import 'package:cl_spreadsheet/models/store/checkbox_grid_id.dart' as _i5;
+import 'package:cl_spreadsheet/models/store/spreadsheet_db.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:sqlite_async/sqlite_async.dart' as _i2;
 

@@ -1,10 +1,10 @@
 import 'package:minimal_mvn/minimal_mvn.dart';
 
-import 'common/async_value.dart';
-import 'store/cell_data.dart';
-import 'store/spread_sheet.dart';
-import 'store/spreadsheet_db.dart';
-import 'package:cl_spreadsheet/store/checkbox_grid_id.dart'; // Import CheckboxGridId
+import '../common/async_value.dart';
+import '../models/store/cell_data.dart';
+import '../models/store/spread_sheet.dart';
+import '../models/store/spreadsheet_db.dart';
+import 'package:cl_spreadsheet/models/store/checkbox_grid_id.dart'; // Import CheckboxGridId
 
 class SpreadSheetDBNotifier extends MMNotifier<AsyncValue<SpreadSheet>> {
   SpreadSheetDBNotifier(this.dbPath) : super(AsyncValue.loading()) {
