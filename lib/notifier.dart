@@ -29,15 +29,7 @@ class SpreadSheetDBNotifier extends MMNotifier<AsyncValue<SpreadSheet>> {
   Future<void> upsert(int row, int col, CellData? cellData) async {
     state.whenOrNull(
       data: (sheet) async {
-        notify(AsyncValue.data(await sheet.upsert(row, col, cellData)));
-      },
-    );
-  }
-
-  Future<void> delete(int row, int col) async {
-    state.whenOrNull(
-      data: (sheet) async {
-        notify(AsyncValue.data(await sheet.delete(row, col)));
+        notify(AsyncValue.data(await sheet.upsertOrDelete(row, col, cellData)));
       },
     );
   }

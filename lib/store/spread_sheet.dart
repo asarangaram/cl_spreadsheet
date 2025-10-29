@@ -29,34 +29,35 @@ class SpreadSheet {
   @override
   int get hashCode => data.hashCode ^ db.hashCode;
 
-  Future<SpreadSheet> upsert(int row, int col, CellData? cellData) async {
-    // First update db
-    await db.upsert(row, col, cellData);
-    final celldataOnDb = await db.read(row, col);
-    if (celldataOnDb == null) {
+  /// cellData == null deletes
+  /// cellData != null upserts
+  Future<SpreadSheet> upsertOrDelete(
+    int row,
+    int col,
+    CellData? cellData,
+  ) async {
+    if (cellData == null) {
+      if (data[row]![col] != null) {
+        await db.delete(row, col);
+        final updated = Map<int, Map<int, CellData>>.from(data);
+        updated[row]!.remove(col);
+        if (updated[row]!.isEmpty) {
+          updated.remove(row);
+        }
+        return copyWith(data: updated);
+      }
       return this;
+    } else {
+      // First update db
+      await db.upsert(row, col, cellData);
+      final updated = Map<int, Map<int, CellData>>.from(data);
+      updated.putIfAbsent(row, () => {});
+      updated[row]![col] = cellData;
+      return copyWith(data: updated);
     }
-    final updated = Map<int, Map<int, CellData>>.from(data);
-    updated.putIfAbsent(row, () => {});
-    updated[row]![col] = celldataOnDb;
-    return copyWith(data: updated);
-  }
-
-  Future<SpreadSheet> delete(int row, int col) async {
-    await db.delete(row, col);
-    final celldataOnDb = await db.read(row, col);
-    if (celldataOnDb == null) {
-      // delete from local if exists
-      return this;
-    }
-    final updated = Map<int, Map<int, CellData>>.from(data);
-    data.putIfAbsent(row, () => {});
-    updated[row]![col] = celldataOnDb;
-    return copyWith(data: updated);
   }
 
   CellData? read(int row, int col) {
-    // Assume the data is in sync with db. Need to work if this is not the case!
     return data[row]?[col];
   }
 

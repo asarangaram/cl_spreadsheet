@@ -15,11 +15,7 @@ class SpreadsheetDB {
     return SpreadsheetDB(db);
   }
 
-  Future<void> upsert(int row, int col, CellData? cellData) async {
-    if (cellData == null) {
-      return delete(row, col);
-    }
-
+  Future<void> upsert(int row, int col, CellData cellData) async {
     await db.execute(
       '''
       INSERT OR REPLACE INTO cells 
