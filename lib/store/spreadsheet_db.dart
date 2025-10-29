@@ -1,4 +1,5 @@
 import 'package:sqlite_async/sqlite_async.dart';
+import 'dart:developer'; // For logging errors
 
 import 'package:cl_spreadsheet/store/cell_data.dart';
 
@@ -35,7 +36,12 @@ class SpreadsheetDB {
     if (result['cell_data'] == null) {
       return null;
     }
-    return CellData.fromJson(result['cell_data'] as String);
+    try {
+      return CellData.fromJson(result['cell_data'] as String);
+    } catch (e, st) {
+      log('Error deserializing CellData for R:$row, C:$col: $e\n$st');
+      return null; // Return null for corrupted data
+    }
   }
 
   /// Deletes a cell record, effectively setting it to NULL.
@@ -60,10 +66,14 @@ class SpreadsheetDB {
       final col = rowData['col_index'] as int;
       final jsonString = rowData['cell_data'] as String;
 
-      final cellData = CellData.fromJson(jsonString);
-
-      spreadsheet.putIfAbsent(row, () => {});
-      spreadsheet[row]![col] = cellData;
+      try {
+        final cellData = CellData.fromJson(jsonString);
+        spreadsheet.putIfAbsent(row, () => {});
+        spreadsheet[row]![col] = cellData;
+      } catch (e, st) {
+        log('Error deserializing CellData for R:$row, C:$col: $e\n$st');
+        // Skip this corrupted entry
+      }
     }
 
     return spreadsheet;
