@@ -13,7 +13,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
     return NavListener(
       builder: (context, page) {
         return AppBar(
-          title: Text("Word Walls"),
+          title: Text("SpreadSheets"),
           centerTitle: true,
           actionsPadding: EdgeInsetsDirectional.only(start: 8),
           leading: page != NavPage.home
