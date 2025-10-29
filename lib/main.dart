@@ -1,8 +1,6 @@
 import 'package:cl_spreadsheet/grid_example_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'grid_layout.dart';
-
 void main() {
   runApp(const MyApp());
 }

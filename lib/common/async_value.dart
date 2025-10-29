@@ -155,7 +155,7 @@ abstract class AsyncValue<T> {
   StackTrace? get stackTrace;
 
   /// Casts the [AsyncValue] to a different type.
-  AsyncValue<R> _cast<R>();
+  AsyncValue<R> cast_<R>();
 
   /// Perform some action based on the current state of the [AsyncValue].
   ///
@@ -279,7 +279,7 @@ class AsyncData<T> extends AsyncValue<T> {
   }
 
   @override
-  AsyncValue<R> _cast<R>() {
+  AsyncValue<R> cast_<R>() {
     if (T == R) return this as AsyncValue<R>;
     return AsyncData<R>._(
       value as R,
@@ -323,7 +323,7 @@ class AsyncLoading<T> extends AsyncValue<T> {
   final StackTrace? stackTrace;
 
   @override
-  AsyncValue<R> _cast<R>() {
+  AsyncValue<R> cast_<R>() {
     if (T == R) return this as AsyncValue<R>;
     return AsyncLoading<R>._(
       hasValue: hasValue,
@@ -428,7 +428,7 @@ class AsyncError<T> extends AsyncValue<T> {
   final StackTrace stackTrace;
 
   @override
-  AsyncValue<R> _cast<R>() {
+  AsyncValue<R> cast_<R>() {
     if (T == R) return this as AsyncValue<R>;
     return AsyncError<R>._(
       error,

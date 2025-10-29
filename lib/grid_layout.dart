@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:async';
 
 // --------------------------------------------------------------------------
 // 0. Abstract Cell Content Definition (Unchanged)
@@ -449,7 +448,7 @@ class CheckboxGridLayout extends StatelessWidget {
           // onSubmitted will be handled by the ViewModel later
           onSubmitted: (id, newValue) {
             // Placeholder for now, will be replaced by ViewModel call
-            print('Cell $id submitted with value: $newValue');
+            //print('Cell $id submitted with value: $newValue');
           },
           defaultBackgroundColor: isDefined
               ? Colors.white
