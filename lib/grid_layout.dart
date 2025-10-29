@@ -11,7 +11,7 @@ abstract class GridCellContent {
   const GridCellContent();
 
   /// Builds the widget representation of the content.
-  Widget buildWidget();
+  Widget buildWidget(BuildContext context);
 
   /// Returns the raw string value for use in a Tooltip.
   String get tooltipMessage;
@@ -31,7 +31,7 @@ class TextContent extends GridCellContent {
   });
 
   @override
-  Widget buildWidget() {
+  Widget buildWidget(BuildContext context) {
     return Text(
       text,
       textAlign: TextAlign.center,
@@ -95,7 +95,7 @@ class IntegerContent extends GridCellContent {
   }
 
   @override
-  Widget buildWidget() {
+  Widget buildWidget(BuildContext context) {
     String formattedText = _getFormattedDisplayValue();
 
     if (paddingCount > 0) {
@@ -139,7 +139,7 @@ class FloatContent extends GridCellContent {
   String get rawValue => value.toString();
 
   @override
-  Widget buildWidget() {
+  Widget buildWidget(BuildContext context) {
     String formattedText = _getFormattedDisplayValue();
 
     if (paddingCount > 0) {
@@ -308,7 +308,7 @@ class _GridCellState extends State<GridCell> {
         focusNode: _focusNode,
       );
     } else {
-      return widget.content!.buildWidget();
+      return widget.content!.buildWidget(context);
     }
   }
 
