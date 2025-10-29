@@ -37,6 +37,9 @@ dependencies:
   intl: ^0.20.2
   sqlite_async: ^0.12.2
   path: ^1.9.1
+  minimal_mvn: ^2.0.2
+  meta: ^1.16.0
+  stack_trace: ^1.12.1
 
 dev_dependencies:
   flutter_test:
