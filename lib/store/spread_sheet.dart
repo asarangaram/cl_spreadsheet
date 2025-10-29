@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart' hide immutable;
 import 'package:cl_spreadsheet/store/cell_data.dart';
 import 'package:cl_spreadsheet/store/spreadsheet_db.dart';
-import 'package:cl_spreadsheet/grid_layout.dart'; // Import CheckboxGridId
+import 'package:cl_spreadsheet/store/checkbox_grid_id.dart'; // Import CheckboxGridId
 import 'package:meta/meta.dart';
 
 @immutable

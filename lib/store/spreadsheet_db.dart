@@ -2,7 +2,7 @@ import 'package:sqlite_async/sqlite_async.dart';
 import 'dart:developer'; // For logging errors
 
 import 'package:cl_spreadsheet/store/cell_data.dart';
-import 'package:cl_spreadsheet/grid_layout.dart'; // Import CheckboxGridId
+import 'package:cl_spreadsheet/store/checkbox_grid_id.dart'; // Import CheckboxGridId
 
 import 'migration.dart';
 

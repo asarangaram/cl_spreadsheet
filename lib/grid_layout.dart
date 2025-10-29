@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cl_spreadsheet/store/checkbox_grid_id.dart'; // Import CheckboxGridId
 
 // --------------------------------------------------------------------------
-// 0. Abstract Cell Content Definition (Unchanged)
+// 0. Abstract Cell Content Definition
 // --------------------------------------------------------------------------
 
 /// Abstract base class for defining the content of a single grid cell.
@@ -19,7 +20,7 @@ abstract class GridCellContent {
   String get rawValue;
 }
 
-/// Content for simple string display. (Unchanged)
+/// Content for simple string display.
 class TextContent extends GridCellContent {
   final String text;
   final TextStyle style;
@@ -47,7 +48,7 @@ class TextContent extends GridCellContent {
   String get rawValue => text;
 }
 
-/// Content for displaying integers with formatting options and padding. (Unchanged)
+/// Content for displaying integers with formatting options and padding.
 class IntegerContent extends GridCellContent {
   final int value;
   final IntegerFormat format;
@@ -116,7 +117,7 @@ class IntegerContent extends GridCellContent {
 
 enum IntegerFormat { decimal, hex, binary, simple }
 
-/// Content for displaying floating-point numbers with fixed precision and padding. (Unchanged)
+/// Content for displaying floating-point numbers with fixed precision and padding.
 class FloatContent extends GridCellContent {
   final double value;
   final int precision;
@@ -156,28 +157,6 @@ class FloatContent extends GridCellContent {
 
   @override
   String get tooltipMessage => _getFormattedDisplayValue();
-}
-
-// --------------------------------------------------------------------------
-// 1. Layout ID and Delegate (Unchanged)
-// --------------------------------------------------------------------------
-
-/// A helper class to uniquely tag children with their (row, column) index.
-class CheckboxGridId {
-  final int row;
-  final int column;
-  CheckboxGridId({required this.row, required this.column});
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is CheckboxGridId &&
-        other.row == row &&
-        other.column == column;
-  }
-
-  @override
-  int get hashCode => row.hashCode ^ column.hashCode;
 }
 
 // --------------------------------------------------------------------------

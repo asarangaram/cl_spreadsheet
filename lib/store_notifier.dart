@@ -4,7 +4,7 @@ import 'common/async_value.dart';
 import 'store/cell_data.dart';
 import 'store/spread_sheet.dart';
 import 'store/spreadsheet_db.dart';
-import 'package:cl_spreadsheet/grid_layout.dart'; // Import CheckboxGridId
+import 'package:cl_spreadsheet/store/checkbox_grid_id.dart'; // Import CheckboxGridId
 
 class SpreadSheetDBNotifier extends MMNotifier<AsyncValue<SpreadSheet>> {
   SpreadSheetDBNotifier(this.dbPath) : super(AsyncValue.loading()) {
@@ -44,11 +44,15 @@ class SpreadSheetDBNotifier extends MMNotifier<AsyncValue<SpreadSheet>> {
             final updatedSheet = await sheet.upsertOrDelete(id, cellData);
             notify(AsyncValue.data(updatedSheet));
             cellErrors.remove(id); // Clear error on success
-            notify(state); // Notify listeners that cellErrors might have changed
+            notify(
+              state,
+            ); // Notify listeners that cellErrors might have changed
             return true;
-          } catch (e, st) {
+          } catch (e) {
             cellErrors[id] = e; // Store cell-specific error
-            notify(state); // Notify listeners that cellErrors might have changed
+            notify(
+              state,
+            ); // Notify listeners that cellErrors might have changed
             return false;
           }
         },
@@ -64,7 +68,7 @@ class SpreadSheetDBNotifier extends MMNotifier<AsyncValue<SpreadSheet>> {
           return false;
         },
       );
-    } catch (e, st) {
+    } catch (e) {
       cellErrors[id] = e; // Store cell-specific error
       notify(state);
       return false;
