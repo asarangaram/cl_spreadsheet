@@ -4,13 +4,14 @@ import 'common/async_value.dart';
 import 'store/cell_data.dart';
 import 'store/spread_sheet.dart';
 import 'store/spreadsheet_db.dart';
+import 'package:cl_spreadsheet/grid_layout.dart'; // Import CheckboxGridId
 
 class SpreadSheetDBNotifier extends MMNotifier<AsyncValue<SpreadSheet>> {
   SpreadSheetDBNotifier(this.dbPath) : super(AsyncValue.loading()) {
     initialize();
   }
   String dbPath;
-  final Map<int, Map<int, Object>> cellErrors = {};
+  final Map<CheckboxGridId, Object> cellErrors = {};
 
   Future<void> initialize() async {
     try {
@@ -35,46 +36,36 @@ class SpreadSheetDBNotifier extends MMNotifier<AsyncValue<SpreadSheet>> {
     );
   }
 
-  Future<bool> upsertOrDelete(int row, int col, CellData? cellData) async {
+  Future<bool> upsertOrDelete(CheckboxGridId id, CellData? cellData) async {
     try {
       return await state.when(
         data: (sheet) async {
           try {
-            final data = await sheet.upsertOrDelete(row, col, cellData);
-            notify(AsyncValue.data(data));
-            if (cellErrors.containsKey(row) &&
-                cellErrors[row]!.containsKey(col)) {
-              cellErrors[row]!.remove(col);
-              if (cellErrors[row]!.isEmpty) {
-                cellErrors.remove(row);
-              }
-            }
-            notify(state);
+            final updatedSheet = await sheet.upsertOrDelete(id, cellData);
+            notify(AsyncValue.data(updatedSheet));
+            cellErrors.remove(id); // Clear error on success
+            notify(state); // Notify listeners that cellErrors might have changed
             return true;
-          } catch (e) {
-            cellErrors.putIfAbsent(row, () => {});
-            cellErrors[row]![col] = e;
-            notify(state);
+          } catch (e, st) {
+            cellErrors[id] = e; // Store cell-specific error
+            notify(state); // Notify listeners that cellErrors might have changed
             return false;
           }
         },
         error: (error, stackTrace) {
-          cellErrors.putIfAbsent(row, () => {});
-          cellErrors[row]![col] =
+          cellErrors[id] =
               'Cannot modify cell: Spreadsheet is in an error state.';
           notify(state);
           return false;
         },
         loading: () {
-          cellErrors.putIfAbsent(row, () => {});
-          cellErrors[row]![col] = 'Cannot modify while loading spreadsheet.';
+          cellErrors[id] = 'Cannot modify while loading spreadsheet.';
           notify(state);
           return false;
         },
       );
-    } catch (e) {
-      cellErrors.putIfAbsent(row, () => {});
-      cellErrors[row]![col] = e;
+    } catch (e, st) {
+      cellErrors[id] = e; // Store cell-specific error
       notify(state);
       return false;
     }

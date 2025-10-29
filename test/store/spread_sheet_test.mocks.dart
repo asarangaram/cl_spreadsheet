@@ -5,7 +5,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
 
-import 'package:cl_spreadsheet/store/cell_data.dart' as _i5;
+import 'package:cl_spreadsheet/grid_layout.dart' as _i5;
+import 'package:cl_spreadsheet/store/cell_data.dart' as _i6;
 import 'package:cl_spreadsheet/store/spreadsheet_db.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:sqlite_async/sqlite_async.dart' as _i2;
@@ -48,38 +49,39 @@ class MockSpreadsheetDB extends _i1.Mock implements _i3.SpreadsheetDB {
           as _i2.SqliteDatabase);
 
   @override
-  _i4.Future<void> upsert(int? row, int? col, _i5.CellData? cellData) =>
+  _i4.Future<void> upsert(_i5.CheckboxGridId? id, _i6.CellData? cellData) =>
       (super.noSuchMethod(
-            Invocation.method(#upsert, [row, col, cellData]),
+            Invocation.method(#upsert, [id, cellData]),
             returnValue: _i4.Future<void>.value(),
             returnValueForMissingStub: _i4.Future<void>.value(),
           )
           as _i4.Future<void>);
 
   @override
-  _i4.Future<_i5.CellData?> read(int? row, int? col) =>
+  _i4.Future<_i6.CellData?> read(_i5.CheckboxGridId? id) =>
       (super.noSuchMethod(
-            Invocation.method(#read, [row, col]),
-            returnValue: _i4.Future<_i5.CellData?>.value(),
+            Invocation.method(#read, [id]),
+            returnValue: _i4.Future<_i6.CellData?>.value(),
           )
-          as _i4.Future<_i5.CellData?>);
+          as _i4.Future<_i6.CellData?>);
 
   @override
-  _i4.Future<void> delete(int? row, int? col) =>
+  _i4.Future<void> delete(_i5.CheckboxGridId? id) =>
       (super.noSuchMethod(
-            Invocation.method(#delete, [row, col]),
+            Invocation.method(#delete, [id]),
             returnValue: _i4.Future<void>.value(),
             returnValueForMissingStub: _i4.Future<void>.value(),
           )
           as _i4.Future<void>);
 
   @override
-  _i4.Future<Map<int, Map<int, _i5.CellData>>> readAll() =>
+  _i4.Future<Map<_i5.CheckboxGridId, _i6.CellData>> readAll() =>
       (super.noSuchMethod(
             Invocation.method(#readAll, []),
-            returnValue: _i4.Future<Map<int, Map<int, _i5.CellData>>>.value(
-              <int, Map<int, _i5.CellData>>{},
-            ),
+            returnValue:
+                _i4.Future<Map<_i5.CheckboxGridId, _i6.CellData>>.value(
+                  <_i5.CheckboxGridId, _i6.CellData>{},
+                ),
           )
-          as _i4.Future<Map<int, Map<int, _i5.CellData>>>);
+          as _i4.Future<Map<_i5.CheckboxGridId, _i6.CellData>>);
 }

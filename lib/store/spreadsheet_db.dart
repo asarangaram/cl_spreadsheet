@@ -2,6 +2,7 @@ import 'package:sqlite_async/sqlite_async.dart';
 import 'dart:developer'; // For logging errors
 
 import 'package:cl_spreadsheet/store/cell_data.dart';
+import 'package:cl_spreadsheet/grid_layout.dart'; // Import CheckboxGridId
 
 import 'migration.dart';
 
@@ -16,21 +17,21 @@ class SpreadsheetDB {
     return SpreadsheetDB(db);
   }
 
-  Future<void> upsert(int row, int col, CellData cellData) async {
+  Future<void> upsert(CheckboxGridId id, CellData cellData) async {
     await db.execute(
       '''
       INSERT OR REPLACE INTO cells 
       (row_index, col_index, cell_data)
       VALUES (?, ?, ?);
       ''',
-      [row, col, cellData.toJson()],
+      [id.row, id.column, cellData.toJson()],
     );
   }
 
-  Future<CellData?> read(int row, int col) async {
+  Future<CellData?> read(CheckboxGridId id) async {
     final result = await db.get(
       'SELECT cell_data FROM cells WHERE row_index = ? AND col_index = ?;',
-      [row, col],
+      [id.row, id.column],
     );
 
     if (result['cell_data'] == null) {
@@ -39,37 +40,37 @@ class SpreadsheetDB {
     try {
       return CellData.fromJson(result['cell_data'] as String);
     } catch (e, st) {
-      log('Error deserializing CellData for R:$row, C:$col: $e\n$st');
+      log('Error deserializing CellData for R:${id.row}, C:${id.column}: $e\n$st');
       return null; // Return null for corrupted data
     }
   }
 
   /// Deletes a cell record, effectively setting it to NULL.
-  Future<void> delete(int row, int col) async {
+  Future<void> delete(CheckboxGridId id) async {
     await db.execute(
       'DELETE FROM cells WHERE row_index = ? AND col_index = ?;',
-      [row, col],
+      [id.row, id.column],
     );
   }
 
-  /// Returns the entire dataset as a nested Map for initial population.
-  /// Format: Map\<row_index, Map\<col_index, CellData>>
-  Future<Map<int, Map<int, CellData>>> readAll() async {
+  /// Returns the entire dataset as a flattened Map for initial population.
+  /// Format: Map\<CheckboxGridId, CellData>
+  Future<Map<CheckboxGridId, CellData>> readAll() async {
     final allRows = await db.getAll(
       'SELECT row_index, col_index, cell_data FROM cells;',
     );
 
-    final Map<int, Map<int, CellData>> spreadsheet = {};
+    final Map<CheckboxGridId, CellData> spreadsheet = {};
 
     for (final rowData in allRows) {
       final row = rowData['row_index'] as int;
       final col = rowData['col_index'] as int;
       final jsonString = rowData['cell_data'] as String;
+      final id = CheckboxGridId(row: row, column: col);
 
       try {
         final cellData = CellData.fromJson(jsonString);
-        spreadsheet.putIfAbsent(row, () => {});
-        spreadsheet[row]![col] = cellData;
+        spreadsheet[id] = cellData;
       } catch (e, st) {
         log('Error deserializing CellData for R:$row, C:$col: $e\n$st');
         // Skip this corrupted entry
