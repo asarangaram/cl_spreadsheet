@@ -47,7 +47,7 @@ class GridCell extends StatefulWidget {
   State<GridCell> createState() => _GridCellState();
 }
 
-class _GridCellState extends State<GridCell> with WidgetsBindingObserver {
+class _GridCellState extends State<GridCell> {
   bool _isEditing = false;
   late TextEditingController _textController;
   late FocusNode _focusNode;
@@ -60,11 +60,6 @@ class _GridCellState extends State<GridCell> with WidgetsBindingObserver {
     );
     _focusNode = FocusNode();
     _focusNode.addListener(_handleFocusChange);
-  }
-
-  @override
-  void didChangeMetrics() {
-    setState(() {});
   }
 
   @override
