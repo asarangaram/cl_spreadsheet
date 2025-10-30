@@ -8,6 +8,6 @@ class SpreadSheetPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MyScaffold(child: SpreadSheetViewer());
+    return MyScaffold(child: ActiveSpreadSheetViewer());
   }
 }

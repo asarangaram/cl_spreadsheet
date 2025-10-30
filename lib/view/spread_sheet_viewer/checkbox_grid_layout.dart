@@ -1,83 +1,122 @@
+import 'package:cl_spreadsheet/listeners/ui_preferences_listener.dart';
+import 'package:cl_spreadsheet/models/sheet_properties.dart';
 import 'package:cl_spreadsheet/models/store/checkbox_grid_id.dart';
-import 'package:cl_spreadsheet/view/spread_sheet_viewer/cell_content/grid_cell_content.dart';
+import 'package:cl_spreadsheet/models/store/spread_sheet.dart';
 import 'package:cl_spreadsheet/view/spread_sheet_viewer/grid_cell.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
-const Color _kErrorColor = Color(0xFFFEEAEA);
+class SpreadSheetGrid extends StatefulWidget {
+  final SheetProperties sheetProperties;
+  final SpreadSheet sheet;
 
-class CheckboxGridLayout extends StatefulWidget {
-  final int rows;
-  final int columns;
-  final Map<CheckboxGridId, GridCellContent> initialChildren;
-
-  const CheckboxGridLayout({
+  const SpreadSheetGrid({
     super.key,
-    required this.rows,
-    required this.columns,
-    required this.initialChildren,
+    required this.sheetProperties,
+    required this.sheet,
   });
 
   @override
-  State<CheckboxGridLayout> createState() => _CheckboxGridLayoutState();
+  State<SpreadSheetGrid> createState() => SpreadSheetGridState();
 }
 
-class _CheckboxGridLayoutState extends State<CheckboxGridLayout> {
-  static const double _kCellWidth = 120.0;
-  static const double _kCellHeight = 40.0;
-
+class SpreadSheetGridState extends State<SpreadSheetGrid> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: SingleChildScrollView(
-        child: SizedBox(
-          width: _kCellWidth * widget.columns,
-          height: _kCellHeight * widget.rows,
+    final prop = widget.sheetProperties;
+
+    return UiPreferencesListener(
+      builder: (context, pref) {
+        final kCellWidth = pref.cellWidth;
+        final kCellHeight = pref.cellHeight;
+        return SizedBox(
+          width: kCellWidth * prop.columns,
+          height: kCellHeight * prop.rows,
           child: GridView.builder(
-            itemCount: widget.rows * widget.columns,
+            itemCount: prop.rows * prop.columns,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: widget.columns,
-              childAspectRatio: _kCellWidth / _kCellHeight,
+              crossAxisCount: prop.columns,
+              childAspectRatio: kCellWidth / kCellHeight,
             ),
             itemBuilder: (context, index) {
-              print("building $index");
-              final row = index ~/ widget.columns;
-              final column = index % widget.columns;
+              final row = index ~/ prop.columns;
+              final column = index % prop.columns;
               final id = CheckboxGridId(row: row, column: column);
 
-              final content = widget.initialChildren[id];
-              final bool isDefined = content != null;
-              final String tooltipMsg = isDefined ? content.tooltipMessage : '';
-              // Error handling is currently in _CheckboxGridLayoutState,
-              // which is being removed. For now, assume no errors.
-              // This will be handled by the ViewModel later.
-              const bool hasError = false;
-
-              return GridCell(
-                id: id,
-                rows: widget.rows,
-                columns: widget.columns,
-                content: content,
-                tooltipMessage: tooltipMsg,
-                // onSubmitted will be handled by the ViewModel later
-                onSubmitted: (id, newValue) {
-                  // Placeholder for now, will be replaced by ViewModel call
-                  //print('Cell $id submitted with value: $newValue');
-                },
-                defaultBackgroundColor: isDefined
-                    ? Colors.white
-                    : Colors.grey.shade100,
-                errorColor: _kErrorColor,
-                hasError: hasError,
-                borderColor: Colors.black,
-                borderWidth: 2.0,
-                cellWidth: _kCellWidth,
-                cellHeight: _kCellHeight,
+              return SizedBox(
+                width: kCellWidth,
+                height: kCellHeight,
+                child: CellBorder(
+                  id: id,
+                  rows: prop.rows,
+                  columns: prop.columns,
+                  borderWidth: 2.0,
+                  child: GridCell(id: id, cellData: widget.sheet.data[id]),
+                ),
               );
             },
           ),
+        );
+      },
+    );
+  }
+}
+
+class CellBorder extends StatelessWidget {
+  const CellBorder({
+    super.key,
+    required this.id,
+    required this.rows,
+    required this.columns,
+    required this.borderWidth,
+    required this.child,
+  });
+  final CheckboxGridId id;
+  final int rows;
+  final int columns;
+  final Widget child;
+  final double borderWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    final borderColor = ShadTheme.of(context).colorScheme.foreground;
+    const double innerBorderFactor = 0.5;
+    final double innerBorderWidth = borderWidth * innerBorderFactor;
+
+    final BorderSide topBorder = BorderSide(
+      color: borderColor,
+      width: id.row == 0 ? borderWidth : innerBorderWidth,
+    );
+    final BorderSide leftBorder = BorderSide(
+      color: borderColor,
+      width: id.column == 0 ? borderWidth : innerBorderWidth,
+    );
+    final BorderSide rightBorder = BorderSide(
+      color: borderColor,
+      width: id.column == columns - 1 ? borderWidth : innerBorderWidth,
+    );
+    final BorderSide bottomBorder = BorderSide(
+      color: borderColor,
+      width: id.row == rows - 1 ? borderWidth : innerBorderWidth,
+    );
+    final hasError = false;
+    final Color cellColor = hasError
+        ? ShadTheme.of(context).colorScheme.destructive
+        : ShadTheme.of(context).colorScheme.background;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: cellColor,
+        border: Border(
+          top: topBorder,
+          left: leftBorder,
+          right: rightBorder,
+          bottom: bottomBorder,
         ),
       ),
+      padding: const EdgeInsets.all(4.0),
+      alignment: Alignment.center,
+      child: child,
     );
   }
 }

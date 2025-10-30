@@ -5,8 +5,8 @@ import 'package:cl_spreadsheet/view/spread_sheet_viewer/cell_content/text_conten
 
 import 'package:flutter/material.dart';
 
-class SpreadSheetViewer extends StatelessWidget {
-  const SpreadSheetViewer({super.key});
+class ActiveSpreadSheetViewer extends StatelessWidget {
+  const ActiveSpreadSheetViewer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,18 +24,15 @@ class SpreadSheetViewer extends StatelessWidget {
                 return Container(
                   width: constraints.maxWidth,
                   height: constraints.maxHeight,
-
                   padding: const EdgeInsets.all(8.0),
-                  color: Colors.white,
-                  child: CheckboxGridLayout(
-                    rows: activeSheet
-                        .rows, // Increased rows to 10 to test scrolling when height > 400
-                    columns: activeSheet.columns,
-                    initialChildren: sheet.data.map((k, v) {
-                      return MapEntry(k, switch (v.value) {
-                        _ => TextContent('${v.value}'),
-                      });
-                    }),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SingleChildScrollView(
+                      child: SpreadSheetGrid(
+                        sheetProperties: activeSheet,
+                        sheet: sheet,
+                      ),
+                    ),
                   ),
                 );
               },
