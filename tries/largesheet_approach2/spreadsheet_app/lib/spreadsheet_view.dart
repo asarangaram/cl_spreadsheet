@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:two_dimensional_scrollables/two_dimensional_scrollables.dart';
-import 'dart:math';
+
 import 'package:spreadsheet_app/data_model.dart';
 
 class SpreadsheetView extends StatefulWidget {
