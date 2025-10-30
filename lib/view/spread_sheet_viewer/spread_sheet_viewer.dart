@@ -1,8 +1,6 @@
 import 'package:cl_spreadsheet/view/spread_sheet_viewer/checkbox_grid_layout.dart';
 import 'package:cl_spreadsheet/listeners/sheets_listener.dart';
 import 'package:cl_spreadsheet/listeners/spreadsheet_listener.dart';
-import 'package:cl_spreadsheet/view/spread_sheet_viewer/cell_content/text_content.dart';
-
 import 'package:flutter/material.dart';
 
 class ActiveSpreadSheetViewer extends StatelessWidget {
