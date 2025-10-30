@@ -26,8 +26,6 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
   int _frozenRowCount = 0;
   int _frozenColCount = 0;
 
-  final Random _random = Random();
-
   TableVicinity? _editingCell;
   final TextEditingController _editingController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
@@ -51,18 +49,20 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
         pinnedRowCount: 1 + _frozenRowCount,
         columnBuilder: (int index) {
           return TableSpan(
-            extent: FixedTableSpanExtent(index == 0 ? 60.0 : _cellWidth), // Smaller width for row header
+            extent: FixedTableSpanExtent(
+              index == 0 ? 60.0 : _cellWidth,
+            ), // Smaller width for row header
           );
         },
         rowBuilder: (int index) {
           return TableSpan(
-            extent: FixedTableSpanExtent(index == 0 ? 40.0 : _cellHeight), // Smaller height for column header
+            extent: FixedTableSpanExtent(
+              index == 0 ? 40.0 : _cellHeight,
+            ), // Smaller height for column header
           );
         },
         cellBuilder: (BuildContext context, TableVicinity vicinity) {
-          return TableViewCell(
-            child: _buildCell(context, vicinity),
-          );
+          return TableViewCell(child: _buildCell(context, vicinity));
         },
       ),
     );
@@ -100,7 +100,8 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
         child: const Text(''),
       );
     } else if (isHeaderRow) {
-      final String headerText = cellData?.value?.toString() ?? _getColumnLabel(vicinity.column);
+      final String headerText =
+          cellData?.value?.toString() ?? _getColumnLabel(vicinity.column);
       return Container(
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey.shade300),
@@ -113,7 +114,8 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
         ),
       );
     } else if (isHeaderColumn) {
-      final String headerText = cellData?.value?.toString() ?? vicinity.row.toString();
+      final String headerText =
+          cellData?.value?.toString() ?? vicinity.row.toString();
       return Container(
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey.shade300),
@@ -127,7 +129,8 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
       );
     } else {
       // Regular data cell
-      bool isEditing = _editingCell != null &&
+      bool isEditing =
+          _editingCell != null &&
           _editingCell!.row == vicinity.row &&
           _editingCell!.column == vicinity.column;
 
@@ -143,7 +146,8 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
         );
       } else {
         final String cellText = cellData?.value?.toString() ?? '';
-        final Color textColor = cellData?.properties?['textColor'] ?? Colors.black;
+        final Color textColor =
+            cellData?.properties['textColor'] ?? Colors.black;
 
         return GestureDetector(
           onDoubleTap: () => _startEditing(vicinity, cellText),
@@ -152,10 +156,7 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
               border: Border.all(color: Colors.grey.shade300),
             ),
             padding: const EdgeInsets.all(8.0),
-            child: Text(
-              cellText,
-              style: TextStyle(color: textColor),
-            ),
+            child: Text(cellText, style: TextStyle(color: textColor)),
           ),
         );
       }
@@ -216,14 +217,18 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
   }
 
   Future<void> _showSettingsDialog() async {
-    final TextEditingController rowController =
-        TextEditingController(text: _rowCount.toString());
-    final TextEditingController colController =
-        TextEditingController(text: _colCount.toString());
-    final TextEditingController cellWidthController =
-        TextEditingController(text: _cellWidth.toString());
-    final TextEditingController cellHeightController =
-        TextEditingController(text: _cellHeight.toString());
+    final TextEditingController rowController = TextEditingController(
+      text: _rowCount.toString(),
+    );
+    final TextEditingController colController = TextEditingController(
+      text: _colCount.toString(),
+    );
+    final TextEditingController cellWidthController = TextEditingController(
+      text: _cellWidth.toString(),
+    );
+    final TextEditingController cellHeightController = TextEditingController(
+      text: _cellHeight.toString(),
+    );
     final TextEditingController frozenRowCountController =
         TextEditingController(text: _frozenRowCount.toString());
     final TextEditingController frozenColCountController =
@@ -260,12 +265,16 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
                 ),
                 TextField(
                   controller: frozenRowCountController,
-                  decoration: const InputDecoration(labelText: 'Additional Frozen Row Count'),
+                  decoration: const InputDecoration(
+                    labelText: 'Additional Frozen Row Count',
+                  ),
                   keyboardType: TextInputType.number,
                 ),
                 TextField(
                   controller: frozenColCountController,
-                  decoration: const InputDecoration(labelText: 'Additional Frozen Column Count'),
+                  decoration: const InputDecoration(
+                    labelText: 'Additional Frozen Column Count',
+                  ),
                   keyboardType: TextInputType.number,
                 ),
               ],
@@ -288,8 +297,12 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
                       double.tryParse(cellWidthController.text) ?? _cellWidth;
                   _cellHeight =
                       double.tryParse(cellHeightController.text) ?? _cellHeight;
-                  _frozenRowCount = int.tryParse(frozenRowCountController.text) ?? _frozenRowCount;
-                  _frozenColCount = int.tryParse(frozenColCountController.text) ?? _frozenColCount;
+                  _frozenRowCount =
+                      int.tryParse(frozenRowCountController.text) ??
+                      _frozenRowCount;
+                  _frozenColCount =
+                      int.tryParse(frozenColCountController.text) ??
+                      _frozenColCount;
                 });
                 Navigator.of(context).pop();
               },
