@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-
+/* import 'package:flutter/scheduler.dart';
+//timeDilation = 20.0; */
 import 'view/app.dart';
 
 void main() {
-  timeDilation = 5.0;
   runApp(const App());
 }
