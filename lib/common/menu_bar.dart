@@ -38,13 +38,35 @@ class SSMenuBar extends StatelessWidget {
           builder: (context, sheets) {
             return ShadMenubar(
               items: [
-                ShadButton.ghost(leading: Icon(Icons.home), onPressed: () {}),
+                SizedBox(
+                  width: 64,
+                  child: (page != NavPage.home)
+                      ? FittedBox(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: ShadButton.ghost(
+                              leading: Icon(Icons.home),
+                              onPressed: () {
+                                navPagesManager.notifier.goto(NavPage.home);
+                              },
+                            ),
+                          ),
+                        )
+                      : null,
+                ),
 
                 ShadMenubarItem(
                   items: [
                     ShadContextMenuItem(
                       child: Text('New Sheet'),
-                      onPressed: () => sheetManager.notifier.newSheet(context),
+                      onPressed: () async {
+                        final sheet = await sheetManager.notifier.newSheet(
+                          context,
+                        );
+                        if (sheet != null) {
+                          navPagesManager.notifier.goto(NavPage.spreadSheet);
+                        }
+                      },
                     ),
 
                     ShadContextMenuItem(
@@ -70,8 +92,12 @@ class SSMenuBar extends StatelessWidget {
                                     ? square
                                     : SizedBox.square(dimension: 16),
                                 child: Text(sheet.name),
-                                onPressed: () =>
-                                    sheetManager.notifier.openSheet(sheet),
+                                onPressed: () {
+                                  sheetManager.notifier.openSheet(sheet);
+                                  navPagesManager.notifier.goto(
+                                    NavPage.spreadSheet,
+                                  );
+                                },
                               ),
                             ),
                       ],

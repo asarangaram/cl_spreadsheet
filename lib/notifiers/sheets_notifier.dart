@@ -13,7 +13,7 @@ class CurrentSheetsNotifier extends MMNotifier<CurrentSheets> {
     print(state);
   }
 
-  newSheet(BuildContext context) async {
+  Future<SheetProperties?> newSheet(BuildContext context) async {
     final sheet = await showShadDialog<SheetProperties?>(
       context: context,
       barrierColor: Colors.transparent,
@@ -37,6 +37,7 @@ class CurrentSheetsNotifier extends MMNotifier<CurrentSheets> {
       sheetManager.notifier.openSheet(sheet);
       print("Sheet : $sheet");
     }
+    return sheet;
   }
 }
 

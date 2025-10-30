@@ -1,3 +1,4 @@
+import 'package:cl_spreadsheet/listeners/sheets_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -106,18 +107,26 @@ class _NewSheetFormState extends State<NewSheetForm> {
         spacing: 12,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ShadInputFormField(
-            id: "Spreadsheet name",
-            controller: nameController,
-            label: const Text("Spreadsheet name"),
-            validator: (value) {
-              if (value.isEmpty) return "Required";
-              final invalid = RegExp(r'[<>:"/\\|?*\.]');
-              if (invalid.hasMatch(value)) {
-                return "Invalid characters. <>:\"'/\\|?*. are not allowed";
-              }
-              if (value.length < 3) return "Min 3 characters";
-              return null;
+          SheetsListener(
+            builder: (context, sheets) {
+              return ShadInputFormField(
+                id: "Spreadsheet name",
+                controller: nameController,
+                label: const Text("Spreadsheet name"),
+                validator: (value) {
+                  if (value.isEmpty) return "Required";
+                  final invalid = RegExp(r'[<>:"/\\|?*\.]');
+                  if (invalid.hasMatch(value)) {
+                    return "Invalid characters. <>:\"'/\\|?*. are not allowed";
+                  }
+                  if (value.length < 3) return "Min 3 characters";
+
+                  if (sheets.sheets.map((e) => e.name).contains(value)) {
+                    return "Name already taken";
+                  }
+                  return null;
+                },
+              );
             },
           ),
           Row(
