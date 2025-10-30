@@ -9,25 +9,25 @@ import 'package:cl_spreadsheet/models/sheet_properties.dart';
 @immutable
 class CurrentSheets {
   final List<SheetProperties> sheets;
-  final String? activeSheetName;
-  const CurrentSheets({this.sheets = const [], this.activeSheetName});
+  final SheetProperties? activeSheet;
+  const CurrentSheets({this.sheets = const [], this.activeSheet});
 
   CurrentSheets copyWith({
     List<SheetProperties>? sheets,
-    ValueGetter<String?>? activeSheetName,
+    ValueGetter<SheetProperties?>? activeSheetName,
   }) {
     return CurrentSheets(
       sheets: sheets ?? this.sheets,
-      activeSheetName: activeSheetName != null
+      activeSheet: activeSheetName != null
           ? activeSheetName.call()
-          : this.activeSheetName,
+          : activeSheet,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'sheets': sheets.map((x) => x.toMap()).toList(),
-      'activeSheetName': activeSheetName,
+      'activeSheetName': activeSheet,
     };
   }
 
@@ -38,8 +38,10 @@ class CurrentSheets {
           (x) => SheetProperties.fromMap(x as Map<String, dynamic>),
         ),
       ),
-      activeSheetName: map['activeSheetName'] != null
-          ? map['activeSheetName'] as String
+      activeSheet: map['activeSheetName'] != null
+          ? SheetProperties.fromMap(
+              map['activeSheetName'] as Map<String, dynamic>,
+            )
           : null,
     );
   }
@@ -51,16 +53,28 @@ class CurrentSheets {
 
   @override
   String toString() =>
-      'SheetsManager(sheets: $sheets, activeSheetName: $activeSheetName)';
+      'SheetsManager(sheets: $sheets, activeSheetName: $activeSheet)';
 
   @override
   bool operator ==(covariant CurrentSheets other) {
     if (identical(this, other)) return true;
 
-    return listEquals(other.sheets, sheets) &&
-        other.activeSheetName == activeSheetName;
+    return listEquals(other.sheets, sheets) && other.activeSheet == activeSheet;
   }
 
   @override
-  int get hashCode => sheets.hashCode ^ activeSheetName.hashCode;
+  int get hashCode => sheets.hashCode ^ activeSheet.hashCode;
+
+  CurrentSheets openSheet(SheetProperties sheet) {
+    final updatedSheets = List<SheetProperties>.from(sheets);
+
+    if (!updatedSheets.contains(sheet)) {
+      if (updatedSheets.map((e) => e.name).contains(sheet.name)) {
+        throw Exception(" Can't add two sheets with same name");
+      }
+      updatedSheets.add(sheet);
+    }
+
+    return CurrentSheets(sheets: updatedSheets, activeSheet: sheet);
+  }
 }

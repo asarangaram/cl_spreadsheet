@@ -112,8 +112,10 @@ class _NewSheetFormState extends State<NewSheetForm> {
             label: const Text("Spreadsheet name"),
             validator: (value) {
               if (value.isEmpty) return "Required";
-              final invalid = RegExp(r'[<>:"/\\|?*]');
-              if (invalid.hasMatch(value)) return "Invalid characters";
+              final invalid = RegExp(r'[<>:"/\\|?*\.]');
+              if (invalid.hasMatch(value)) {
+                return "Invalid characters. <>:\"'/\\|?*. are not allowed";
+              }
               if (value.length < 3) return "Min 3 characters";
               return null;
             },
