@@ -30,6 +30,16 @@ class _NewSheetFormState extends State<NewSheetForm> {
   final colController = TextEditingController();
 
   @override
+  void initState() {
+    final newSheet = SheetProperties.newDefault();
+    nameController.text = newSheet.name;
+    rowController.text = newSheet.rows.toString();
+    colController.text = newSheet.columns.toString();
+
+    super.initState();
+  }
+
+  @override
   void dispose() {
     nameController.dispose();
     rowController.dispose();

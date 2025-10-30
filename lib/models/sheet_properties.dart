@@ -51,4 +51,14 @@ class SheetProperties {
 
   @override
   int get hashCode => name.hashCode ^ columns.hashCode ^ rows.hashCode;
+
+  factory SheetProperties.newDefault() {
+    final now = DateTime.now();
+    final timestamp =
+        "${now.year}-${_two(now.month)}-${_two(now.day)}_${_two(now.hour)}-${_two(now.minute)}-${_two(now.second)}";
+
+    return SheetProperties(name: "Sheet_$timestamp", columns: 3, rows: 8);
+  }
+
+  static String _two(int v) => v.toString().padLeft(2, '0');
 }
