@@ -1,5 +1,6 @@
 import 'package:cl_spreadsheet/common/menu_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class MyScaffold extends StatelessWidget {
   const MyScaffold({super.key, required this.child});
@@ -10,6 +11,10 @@ class MyScaffold extends StatelessWidget {
       body: Column(
         children: [
           SSMenuBar(),
+          Divider(
+            color: ShadTheme.of(context).colorScheme.foreground,
+            height: 1,
+          ),
           Expanded(child: child),
         ],
       ),
