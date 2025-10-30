@@ -30,11 +30,6 @@ class _NewSheetFormState extends State<NewSheetForm> {
   final colController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     nameController.dispose();
     rowController.dispose();
@@ -44,30 +39,25 @@ class _NewSheetFormState extends State<NewSheetForm> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context).colorScheme;
+
     return SizedBox(
       width: width,
       height: height,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(borderRadius),
-          border: Border.all(width: 2, color: Colors.grey.shade300),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 8,
-              offset: Offset(0, 4),
-              color: Colors.black.withValues(alpha: 0.10),
-            ),
-          ],
+          border: Border.all(width: 2, color: theme.border),
+          color: theme.background,
+          boxShadow: [BoxShadow(blurRadius: 8, offset: const Offset(0, 4))],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(borderRadius - 2),
           child: ShadForm(
             key: _formKey,
-
             child: Column(
               children: [
-                _buildBanner(),
+                _buildBanner(theme),
                 Expanded(child: _buildFormFields()),
                 _buildSubmitButton(),
               ],
@@ -78,11 +68,11 @@ class _NewSheetFormState extends State<NewSheetForm> {
     );
   }
 
-  Widget _buildBanner() {
+  Widget _buildBanner(ShadColorScheme theme) {
     return Container(
       height: bannerHeight,
       padding: const EdgeInsets.symmetric(horizontal: 12),
-      color: Colors.grey.shade200,
+      color: theme.muted,
       child: Row(
         children: [
           const Text(
@@ -109,25 +99,15 @@ class _NewSheetFormState extends State<NewSheetForm> {
           ShadInputFormField(
             id: "Spreadsheet name",
             controller: nameController,
-            /* decoration: const InputDecoration(
-              labelText: "Spreadsheet name",
-              filled: true,
-            ), */
-            label: Text("Spreadsheet name"),
+            label: const Text("Spreadsheet name"),
             validator: (value) {
               if (value.isEmpty) return "Required";
-
               final invalid = RegExp(r'[<>:"/\\|?*]');
-              if (invalid.hasMatch(value)) {
-                return "Invalid characters in filename";
-              }
-              if (value.length < 3) {
-                return "minimum 3 letters";
-              }
+              if (invalid.hasMatch(value)) return "Invalid characters";
+              if (value.length < 3) return "Min 3 characters";
               return null;
             },
           ),
-
           Row(
             spacing: 8,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,17 +126,13 @@ class _NewSheetFormState extends State<NewSheetForm> {
       controller: controller,
       id: label,
       label: Text(label),
-      // decoration: InputDecoration(labelText: label, filled: true),
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       keyboardType: TextInputType.number,
-
       validator: (value) {
         if (value.isEmpty) return "Required";
-
         final numValue = int.tryParse(value);
         if (numValue == null) return "Invalid";
         if (numValue < 2 || numValue > 99) return "2–99 only";
-
         return null;
       },
     );
