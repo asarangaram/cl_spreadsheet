@@ -168,6 +168,7 @@ class _NewSheetFormState extends State<NewSheetForm> {
           onPressed: () {
             if (_formKey.currentState!.saveAndValidate()) {
               final map = _formKey.currentState!.value;
+              _formKey.currentState!.reset();
               widget.onSubmit(
                 sheetProperties: SheetProperties(
                   name: map["Spreadsheet name"],
