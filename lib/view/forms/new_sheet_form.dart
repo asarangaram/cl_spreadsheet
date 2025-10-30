@@ -1,71 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../models/sheet_properties.dart';
+
 class NewSheetForm extends StatefulWidget {
-  final double width;
-  final double height;
-  final double borderRadius;
-  final void Function(String name, int rows, int cols)? onSubmit;
+  final VoidCallback onClose;
+  final void Function({required SheetProperties sheetProperties}) onSubmit;
 
   const NewSheetForm({
     super.key,
-    this.width = 340,
-    this.height = 310,
-    this.borderRadius = 18,
-    this.onSubmit,
+    required this.onClose,
+    required this.onSubmit,
   });
 
   @override
-  State<NewSheetForm> createState() => NewSheetFormState();
+  State<NewSheetForm> createState() => _NewSheetFormState();
 }
 
-class NewSheetFormState extends State<NewSheetForm> {
-  final _formKey = GlobalKey<FormState>();
+class _NewSheetFormState extends State<NewSheetForm> {
+  final double borderRadius = 18;
+  final double bannerHeight = 48;
+  final double width = 420;
+  final double height = 340;
 
-  final _nameCtrl = TextEditingController();
-  final _rowCtrl = TextEditingController(text: "10");
-  final _colCtrl = TextEditingController(text: "5");
+  final _formKey = GlobalKey<ShadFormState>();
+  final nameController = TextEditingController();
+  final rowController = TextEditingController();
+  final colController = TextEditingController();
 
-  final RegExp _invalidFileChars = RegExp(r'[\/\\\:\*\?\"\<\>\|]');
-
-  String? _validateName(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return "Name required";
-    }
-    if (_invalidFileChars.hasMatch(value)) {
-      return "Invalid characters: / \\ : * ? \" < > |";
-    }
-    return null;
+  @override
+  void initState() {
+    super.initState();
   }
 
-  String? _validateNumber(String? value) {
-    final num = int.tryParse(value ?? "");
-    if (num == null) return "Required";
-    if (num < 2) return "Min 2";
-    if (num > 99) return "Max 99";
-    return null;
-  }
-
-  void _submit() {
-    if (_formKey.currentState!.validate()) {
-      widget.onSubmit?.call(
-        _nameCtrl.text,
-        int.parse(_rowCtrl.text),
-        int.parse(_colCtrl.text),
-      );
-    }
+  @override
+  void dispose() {
+    nameController.dispose();
+    rowController.dispose();
+    colController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: widget.width,
-      height: widget.height,
+      width: width,
+      height: height,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(widget.borderRadius),
+          borderRadius: BorderRadius.circular(borderRadius),
           border: Border.all(width: 2, color: Colors.grey.shade300),
+          color: Colors.white,
           boxShadow: [
             BoxShadow(
               blurRadius: 8,
@@ -75,99 +61,126 @@ class NewSheetFormState extends State<NewSheetForm> {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(widget.borderRadius - 2),
-          child: Form(
+          borderRadius: BorderRadius.circular(borderRadius - 2),
+          child: ShadForm(
             key: _formKey,
+
             child: Column(
               children: [
-                Container(
-                  height: 42,
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  color: Colors.grey.shade200,
-                  child: const Text(
-                    "New Spreadsheet",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
-                ),
-
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Spreadsheet Name"),
-                        const SizedBox(height: 4),
-                        ShadInputFormField(
-                          controller: _nameCtrl,
-                          validator: _validateName,
-                          textInputAction: TextInputAction.next,
-                          /* decoration: const InputDecoration(
-                            isDense: true,
-                            border: OutlineInputBorder(),
-                          ), */
-                        ),
-                        const SizedBox(height: 14),
-
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text("Rows"),
-                                  const SizedBox(height: 4),
-                                  ShadInputFormField(
-                                    controller: _rowCtrl,
-                                    keyboardType: TextInputType.number,
-                                    validator: _validateNumber,
-                                    /* decoration: const InputDecoration(
-                                      isDense: true,
-                                      border: OutlineInputBorder(),
-                                    ), */
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text("Columns"),
-                                  const SizedBox(height: 4),
-                                  ShadInputFormField(
-                                    controller: _colCtrl,
-                                    keyboardType: TextInputType.number,
-                                    validator: _validateNumber,
-                                    /* decoration: const InputDecoration(
-                                      isDense: true,
-                                      border: OutlineInputBorder(),
-                                    ), */
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const Spacer(),
-
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: ShadButton.secondary(
-                            onPressed: _submit,
-                            child: const Text("Create"),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                _buildBanner(),
+                Expanded(child: _buildFormFields()),
+                _buildSubmitButton(),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBanner() {
+    return Container(
+      height: bannerHeight,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      color: Colors.grey.shade200,
+      child: Row(
+        children: [
+          const Text(
+            "New spreadsheet",
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const Spacer(),
+          GestureDetector(
+            onTap: widget.onClose,
+            child: const Icon(Icons.close, size: 20),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFormFields() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        spacing: 12,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ShadInputFormField(
+            id: "Spreadsheet name",
+            controller: nameController,
+            /* decoration: const InputDecoration(
+              labelText: "Spreadsheet name",
+              filled: true,
+            ), */
+            label: Text("Spreadsheet name"),
+            validator: (value) {
+              if (value.isEmpty) return "Required";
+
+              final invalid = RegExp(r'[<>:"/\\|?*]');
+              if (invalid.hasMatch(value)) {
+                return "Invalid characters in filename";
+              }
+              if (value.length < 3) {
+                return "minimum 3 letters";
+              }
+              return null;
+            },
+          ),
+
+          Row(
+            spacing: 8,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: _numberField("Rows", rowController)),
+              Expanded(child: _numberField("Columns", colController)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _numberField(String label, TextEditingController controller) {
+    return ShadInputFormField(
+      controller: controller,
+      id: label,
+      label: Text(label),
+      // decoration: InputDecoration(labelText: label, filled: true),
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      keyboardType: TextInputType.number,
+
+      validator: (value) {
+        if (value.isEmpty) return "Required";
+
+        final numValue = int.tryParse(value);
+        if (numValue == null) return "Invalid";
+        if (numValue < 2 || numValue > 99) return "2–99 only";
+
+        return null;
+      },
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, right: 16, bottom: 16),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: ShadButton.secondary(
+          onPressed: () {
+            if (_formKey.currentState!.saveAndValidate()) {
+              final map = _formKey.currentState!.value;
+              widget.onSubmit(
+                sheetProperties: SheetProperties(
+                  name: map["Spreadsheet name"],
+                  rows: int.parse(map["Rows"]),
+                  columns: int.parse(map["Columns"]),
+                ),
+              );
+            }
+          },
+          child: const Text("Create"),
         ),
       ),
     );
