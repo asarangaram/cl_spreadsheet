@@ -37,13 +37,16 @@ class SSMenuBar extends StatelessWidget {
         return SheetsListener(
           builder: (context, sheets) {
             return ShadMenubar(
+              selectOnHover: false,
               items: [
-                SizedBox(
+                /* SizedBox(
                   width: 64,
+                  height: 64,
                   child: (page != NavPage.home)
-                      ? FittedBox(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
+                      ? Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: FittedBox(
+                            fit: BoxFit.cover,
                             child: ShadButton.ghost(
                               leading: Icon(Icons.home),
                               onPressed: () {
@@ -53,8 +56,7 @@ class SSMenuBar extends StatelessWidget {
                           ),
                         )
                       : null,
-                ),
-
+                ), */
                 ShadMenubarItem(
                   items: [
                     ShadContextMenuItem(
@@ -104,14 +106,31 @@ class SSMenuBar extends StatelessWidget {
                       child: Text('Open Sheet'),
                     ),
                     divider,
-                    const ShadContextMenuItem(
-                      enabled: false,
+                    ShadContextMenuItem(
+                      onPressed: () =>
+                          navPagesManager.notifier.goto(NavPage.home),
                       child: Text('Close'),
                     ),
                   ],
                   child: const Text('Sheets'),
                 ),
-                Spacer(),
+                if ((page == NavPage.spreadSheet) && sheets.activeSheet != null)
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          sheets.activeSheet!.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.fade,
+                          style: theme.textTheme.h4,
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  Spacer(),
                 UiPreferencesListener(
                   builder: (context, uiPreferences) {
                     final themeMode = uiPreferences.themeMode;

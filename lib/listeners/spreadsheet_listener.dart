@@ -5,13 +5,17 @@ import 'package:cl_spreadsheet/notifiers/store_notifier.dart';
 import 'package:flutter/material.dart';
 
 class SpreadSheetListener extends StatelessWidget {
-  const SpreadSheetListener({super.key, required this.builder});
+  const SpreadSheetListener({
+    super.key,
+    required this.builder,
+    required this.sheetName,
+  });
   final Widget Function(BuildContext context, SpreadSheet page) builder;
+  final String sheetName;
 
   @override
   Widget build(BuildContext context) {
-    String dBPath = "mysheet.ss";
-    final notifier = spreadSheetDBManager(dBPath).notifier;
+    final notifier = spreadSheetDBManager(sheetName).notifier;
 
     return ListenableBuilder(
       listenable: notifier,
@@ -21,7 +25,7 @@ class SpreadSheetListener extends StatelessWidget {
 
           error: (error, stackTrace) {
             return MyScaffold(
-              child: Center(child: Text("Error: Failed to open $dBPath")),
+              child: Center(child: Text("Error: Failed to open $sheetName")),
             );
           },
           loading: () =>

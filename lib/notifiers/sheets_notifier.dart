@@ -10,7 +10,6 @@ class CurrentSheetsNotifier extends MMNotifier<CurrentSheets> {
 
   openSheet(SheetProperties sheet) {
     notify(state.openSheet(sheet));
-    print(state);
   }
 
   Future<SheetProperties?> newSheet(BuildContext context) async {
@@ -35,7 +34,6 @@ class CurrentSheetsNotifier extends MMNotifier<CurrentSheets> {
     );
     if (sheet != null) {
       sheetManager.notifier.openSheet(sheet);
-      print("Sheet : $sheet");
     }
     return sheet;
   }
