@@ -1,40 +1,34 @@
+import 'package:cl_spreadsheet/models/sheet_properties.dart';
+import 'package:cl_spreadsheet/models/spreadsheet_config.dart';
+import 'package:cl_spreadsheet/models/store/cell_data.dart';
+import 'package:cl_spreadsheet/models/store/checkbox_grid_id.dart';
 import 'package:flutter/material.dart';
 import 'package:two_dimensional_scrollables/two_dimensional_scrollables.dart';
-import 'dart:math';
-import 'package:spreadsheet_app/data_model.dart';
-import 'package:spreadsheet_app/spreadsheet_config.dart';
 
 class SpreadsheetView extends StatefulWidget {
   const SpreadsheetView({
     super.key,
+    required this.sheetProperties,
     required this.initialData,
     required this.onCellChanged,
     required this.config,
     required this.onConfigChanged,
   });
 
+  final SheetProperties sheetProperties;
   final Map<CheckboxGridId, CellData> initialData;
-  final Function(CheckboxGridId, CellData?) onCellChanged;
+  final Function(CheckboxGridId id, CellData? data) onCellChanged;
   final SpreadsheetConfig config;
-  final Function(SpreadsheetConfig) onConfigChanged;
+  final Function(SpreadsheetConfig config) onConfigChanged;
 
   @override
   State<SpreadsheetView> createState() => _SpreadsheetViewState();
 }
 
 class _SpreadsheetViewState extends State<SpreadsheetView> {
-  final Random _random = Random();
-
   TableVicinity? _editingCell;
   final TextEditingController _editingController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-
-  String _generateRandomText() {
-    return List.generate(
-      10,
-      (_) => _random.nextInt(26) + 65,
-    ).map((e) => String.fromCharCode(e)).join();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +43,9 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
         ],
       ),
       body: TableView.builder(
-        columnCount: widget.config.colCount + 1, // +1 for the header column
-        rowCount: widget.config.rowCount + 1, // +1 for the header row
+        columnCount:
+            widget.sheetProperties.columns + 1, // +1 for the header column
+        rowCount: widget.sheetProperties.rows + 1, // +1 for the header row
         pinnedColumnCount: 1 + widget.config.frozenColCount,
         pinnedRowCount: 1 + widget.config.frozenRowCount,
         columnBuilder: (int index) {
@@ -223,19 +218,11 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
   }
 
   Future<void> _showSettingsDialog() async {
-    int tempRowCount = widget.config.rowCount;
-    int tempColCount = widget.config.colCount;
     double tempCellWidth = widget.config.cellWidth;
     double tempCellHeight = widget.config.cellHeight;
     int tempFrozenRowCount = widget.config.frozenRowCount;
     int tempFrozenColCount = widget.config.frozenColCount;
 
-    final TextEditingController rowController = TextEditingController(
-      text: tempRowCount.toString(),
-    );
-    final TextEditingController colController = TextEditingController(
-      text: tempColCount.toString(),
-    );
     final TextEditingController cellWidthController = TextEditingController(
       text: tempCellWidth.toString(),
     );
@@ -256,20 +243,6 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                TextField(
-                  controller: rowController,
-                  decoration: const InputDecoration(labelText: 'Row Count'),
-                  keyboardType: TextInputType.number,
-                  onChanged: (value) =>
-                      tempRowCount = int.tryParse(value) ?? tempRowCount,
-                ),
-                TextField(
-                  controller: colController,
-                  decoration: const InputDecoration(labelText: 'Column Count'),
-                  keyboardType: TextInputType.number,
-                  onChanged: (value) =>
-                      tempColCount = int.tryParse(value) ?? tempColCount,
-                ),
                 TextField(
                   controller: cellWidthController,
                   decoration: const InputDecoration(labelText: 'Cell Width'),
@@ -317,8 +290,6 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
               onPressed: () {
                 widget.onConfigChanged(
                   widget.config.copyWith(
-                    rowCount: tempRowCount,
-                    colCount: tempColCount,
                     cellWidth: tempCellWidth,
                     cellHeight: tempCellHeight,
                     frozenRowCount: tempFrozenRowCount,

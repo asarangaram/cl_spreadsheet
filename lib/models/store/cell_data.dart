@@ -8,7 +8,7 @@ class CellData {
   final dynamic value;
   final Map<String, dynamic> properties;
 
-  CellData({required this.value, required this.properties});
+  CellData({required this.value, this.properties = const {}});
 
   CellData copyWith({dynamic value, Map<String, dynamic>? properties}) {
     return CellData(

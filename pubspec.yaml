@@ -41,6 +41,7 @@ dependencies:
   meta: ^1.16.0
   stack_trace: ^1.12.1
   shadcn_ui: ^0.39.2
+  two_dimensional_scrollables: ^0.3.7
 
 dev_dependencies:
   flutter_test:

@@ -694,7 +694,7 @@ packages:
     source: hosted
     version: "6.0.1"
   two_dimensional_scrollables:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: two_dimensional_scrollables
       sha256: "0f77ecb96596f2f82eec2b0a8e60d9305c58315557da9fa3b610c7dbf5ded621"
