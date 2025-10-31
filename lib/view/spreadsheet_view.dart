@@ -32,40 +32,29 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Spreadsheet Demo'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: _showSettingsDialog,
-          ),
-        ],
-      ),
-      body: TableView.builder(
-        columnCount:
-            widget.sheetProperties.columns + 1, // +1 for the header column
-        rowCount: widget.sheetProperties.rows + 1, // +1 for the header row
-        pinnedColumnCount: 1 + widget.config.frozenColCount,
-        pinnedRowCount: 1 + widget.config.frozenRowCount,
-        columnBuilder: (int index) {
-          return TableSpan(
-            extent: FixedTableSpanExtent(
-              index == 0 ? 60.0 : widget.config.cellWidth,
-            ), // Smaller width for row header
-          );
-        },
-        rowBuilder: (int index) {
-          return TableSpan(
-            extent: FixedTableSpanExtent(
-              index == 0 ? 40.0 : widget.config.cellHeight,
-            ), // Smaller height for column header
-          );
-        },
-        cellBuilder: (BuildContext context, TableVicinity vicinity) {
-          return TableViewCell(child: _buildCell(context, vicinity));
-        },
-      ),
+    return TableView.builder(
+      columnCount:
+          widget.sheetProperties.columns + 1, // +1 for the header column
+      rowCount: widget.sheetProperties.rows + 1, // +1 for the header row
+      pinnedColumnCount: 1 + widget.config.frozenColCount,
+      pinnedRowCount: 1 + widget.config.frozenRowCount,
+      columnBuilder: (int index) {
+        return TableSpan(
+          extent: FixedTableSpanExtent(
+            index == 0 ? 60.0 : widget.config.cellWidth,
+          ), // Smaller width for row header
+        );
+      },
+      rowBuilder: (int index) {
+        return TableSpan(
+          extent: FixedTableSpanExtent(
+            index == 0 ? 40.0 : widget.config.cellHeight,
+          ), // Smaller height for column header
+        );
+      },
+      cellBuilder: (BuildContext context, TableVicinity vicinity) {
+        return TableViewCell(child: _buildCell(context, vicinity));
+      },
     );
   }
 
@@ -215,93 +204,5 @@ class _SpreadsheetViewState extends State<SpreadsheetView> {
     _editingController.dispose();
     _focusNode.dispose();
     super.dispose();
-  }
-
-  Future<void> _showSettingsDialog() async {
-    double tempCellWidth = widget.config.cellWidth;
-    double tempCellHeight = widget.config.cellHeight;
-    int tempFrozenRowCount = widget.config.frozenRowCount;
-    int tempFrozenColCount = widget.config.frozenColCount;
-
-    final TextEditingController cellWidthController = TextEditingController(
-      text: tempCellWidth.toString(),
-    );
-    final TextEditingController cellHeightController = TextEditingController(
-      text: tempCellHeight.toString(),
-    );
-    final TextEditingController frozenRowCountController =
-        TextEditingController(text: tempFrozenRowCount.toString());
-    final TextEditingController frozenColCountController =
-        TextEditingController(text: tempFrozenColCount.toString());
-
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Settings'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                TextField(
-                  controller: cellWidthController,
-                  decoration: const InputDecoration(labelText: 'Cell Width'),
-                  keyboardType: TextInputType.number,
-                  onChanged: (value) =>
-                      tempCellWidth = double.tryParse(value) ?? tempCellWidth,
-                ),
-                TextField(
-                  controller: cellHeightController,
-                  decoration: const InputDecoration(labelText: 'Cell Height'),
-                  keyboardType: TextInputType.number,
-                  onChanged: (value) =>
-                      tempCellHeight = double.tryParse(value) ?? tempCellHeight,
-                ),
-                TextField(
-                  controller: frozenRowCountController,
-                  decoration: const InputDecoration(
-                    labelText: 'Additional Frozen Row Count',
-                  ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (value) => tempFrozenRowCount =
-                      int.tryParse(value) ?? tempFrozenRowCount,
-                ),
-                TextField(
-                  controller: frozenColCountController,
-                  decoration: const InputDecoration(
-                    labelText: 'Additional Frozen Column Count',
-                  ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (value) => tempFrozenColCount =
-                      int.tryParse(value) ?? tempFrozenColCount,
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Apply'),
-              onPressed: () {
-                widget.onConfigChanged(
-                  widget.config.copyWith(
-                    cellWidth: tempCellWidth,
-                    cellHeight: tempCellHeight,
-                    frozenRowCount: tempFrozenRowCount,
-                    frozenColCount: tempFrozenColCount,
-                  ),
-                );
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }

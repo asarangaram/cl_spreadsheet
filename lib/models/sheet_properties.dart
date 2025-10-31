@@ -13,6 +13,23 @@ class SheetProperties {
     required this.rows,
   });
 
+  factory SheetProperties.fromFileName(String fileName) {
+    final sheetPattern = RegExp(r'^(.+)\.(\d+)\.(\d+)\.sheet$');
+    final match = sheetPattern.firstMatch(fileName);
+
+    if (match != null) {
+      final name = match.group(1)!;
+      final rows = int.parse(match.group(2)!);
+      final columns = int.parse(match.group(3)!);
+      return SheetProperties(name: name, rows: rows, columns: columns);
+    }
+    throw const FormatException('Invalid filename format');
+  }
+
+  String toFileName() {
+    return '$name.$rows.$columns.sheet';
+  }
+
   SheetProperties copyWith({String? name, int? columns, int? rows}) {
     return SheetProperties(
       name: name ?? this.name,

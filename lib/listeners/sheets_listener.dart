@@ -1,10 +1,12 @@
+import 'package:cl_spreadsheet/common/async_value.dart';
 import 'package:cl_spreadsheet/models/sheets_manager.dart';
 import 'package:cl_spreadsheet/notifiers/sheets_notifier.dart';
 import 'package:flutter/material.dart';
 
 class SheetsListener extends StatelessWidget {
   const SheetsListener({super.key, required this.builder});
-  final Widget Function(BuildContext context, CurrentSheets sheets) builder;
+  final Widget Function(BuildContext context, AsyncValue<CurrentSheets> sheets)
+  builder;
 
   @override
   Widget build(BuildContext context) {

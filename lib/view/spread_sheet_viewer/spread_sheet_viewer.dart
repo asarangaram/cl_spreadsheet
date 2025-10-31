@@ -1,3 +1,4 @@
+import 'package:cl_spreadsheet/common/async_value.dart';
 import 'package:cl_spreadsheet/listeners/ui_preferences_listener.dart';
 import 'package:cl_spreadsheet/notifiers/store_notifier.dart';
 import 'package:cl_spreadsheet/notifiers/ui_preferences.dart';
@@ -14,31 +15,38 @@ class ActiveSpreadSheetViewer extends StatelessWidget {
     return UiPreferencesListener(
       builder: (context, pref) {
         return SheetsListener(
-          builder: (context, sheets) {
-            final activeSheet = sheets.activeSheet;
-            if (activeSheet == null) {
-              throw Exception(
-                "Invoke this widget only when activeSheet is set",
-              );
-            }
-            return SpreadSheetListener(
-              sheetName: activeSheet.name,
-              builder: (context, sheet) {
-                return SpreadsheetView(
+          builder: (context, sheetsAsync) {
+            return sheetsAsync.when(
+              data: (sheets) {
+                final activeSheet = sheets.activeSheet;
+                if (activeSheet == null) {
+                  throw Exception(
+                    "Invoke this widget only when activeSheet is set",
+                  );
+                }
+                return SpreadSheetListener(
                   sheetProperties: activeSheet,
-                  initialData: sheet.data,
-                  config: pref.sheetConfigGlobal,
-                  onCellChanged: (id, data) {
-                    final notifier = spreadSheetDBManager(
-                      activeSheet.name,
-                    ).notifier;
-                    notifier.upsertOrDelete(id, data);
-                  },
-                  onConfigChanged: (config) {
-                    uiPreferencesManager.notifier.updateConfig(config);
+                  builder: (context, sheet) {
+                    return SpreadsheetView(
+                      sheetProperties: activeSheet,
+                      initialData: sheet.data,
+                      config: pref.sheetConfigGlobal,
+                      onCellChanged: (id, data) {
+                        final notifier = spreadSheetDBManager(
+                          activeSheet,
+                        ).notifier;
+                        notifier.upsertOrDelete(id, data);
+                      },
+                      onConfigChanged: (config) {
+                        uiPreferencesManager.notifier.updateConfig(config);
+                      },
+                    );
                   },
                 );
               },
+              error: (e, st) =>
+                  Center(child: Text("Error: Failed to load sheets")),
+              loading: () => CircularProgressIndicator(),
             );
           },
         );

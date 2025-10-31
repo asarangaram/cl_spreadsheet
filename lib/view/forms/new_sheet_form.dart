@@ -1,3 +1,4 @@
+import 'package:cl_spreadsheet/common/async_value.dart';
 import 'package:cl_spreadsheet/listeners/sheets_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -108,24 +109,31 @@ class _NewSheetFormState extends State<NewSheetForm> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SheetsListener(
-            builder: (context, sheets) {
-              return ShadInputFormField(
-                id: "Spreadsheet name",
-                controller: nameController,
-                label: const Text("Spreadsheet name"),
-                validator: (value) {
-                  if (value.isEmpty) return "Required";
-                  final invalid = RegExp(r'[<>:"/\\|?*\.]');
-                  if (invalid.hasMatch(value)) {
-                    return "Invalid characters. <>:\"'/\\|?*. are not allowed";
-                  }
-                  if (value.length < 3) return "Min 3 characters";
+            builder: (context, sheetsAsync) {
+              return sheetsAsync.when(
+                data: (sheets) {
+                  return ShadInputFormField(
+                    id: "Spreadsheet name",
+                    controller: nameController,
+                    label: const Text("Spreadsheet name"),
+                    validator: (value) {
+                      if (value.isEmpty) return "Required";
+                      final invalid = RegExp(r'[<>:"/\\|?*\.]');
+                      if (invalid.hasMatch(value)) {
+                        return "Invalid characters. <>:\"'/\\|?*. are not allowed";
+                      }
+                      if (value.length < 3) return "Min 3 characters";
 
-                  if (sheets.sheets.map((e) => e.name).contains(value)) {
-                    return "Name already taken";
-                  }
-                  return null;
+                      if (sheets.sheets.map((e) => e.name).contains(value)) {
+                        return "Name already taken";
+                      }
+                      return null;
+                    },
+                  );
                 },
+                error: (e, st) =>
+                    Center(child: Text("Error: Failed to load sheets")),
+                loading: () => CircularProgressIndicator(),
               );
             },
           ),
